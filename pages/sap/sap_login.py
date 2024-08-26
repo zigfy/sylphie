@@ -1,8 +1,8 @@
 import streamlit as st
 
 def login_screen():
-    st.title("Login - Sylphie")
-    st.image("images\\logo.png", width=150)
+    st.image("images\\logo.png", width=250)
+    st.title("Faça logon no SAP:")
 
     username = st.text_input("Usuário SAP", type="password")
     password = st.text_input("Senha SAP", type="password")
@@ -17,8 +17,8 @@ def login_screen():
             st.error("Usuário ou senha inválidos.")
             
 def authenticate(username, password):
-    # Aqui você pode adicionar a lógica de autenticação, por exemplo, validando com o SAP ou verificando contra um banco de dados
-    # Para fins de teste, vamos apenas simular:
+    # we need to create an authentication flow, probably calling ABAP function or testing against windows AD vault
+    # while we are developing, the default root account is below
     if username == "admin" and password == "admin":
         return True
     else:
