@@ -39,8 +39,8 @@ session.findById("wnd[0]/usr/btn%_S_MATNR_%_APP_%-VALU_PUSH").press
     session.findById("wnd[0]/tbar[1]/btn[26]").press 'normal view
     session.findById("wnd[0]/tbar[1]/btn[38]").press 'grid control
     session.findById("wnd[0]/tbar[1]/btn[45]").press 'export file
-    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[1,0]").select 'option 1
-    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[1,0]").setFocus 'option 2
+    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[3,0]").select 'option 1
+    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[3,0]").setFocus 'option 2
     session.findById("wnd[1]/tbar[0]/btn[0]").press 'confirm export as excel sheet
     session.findById("wnd[1]/usr/ctxtDY_PATH").text = "{export_path}" 'dir path
     session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "{filename}" 'filename

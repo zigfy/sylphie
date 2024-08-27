@@ -40,7 +40,7 @@ def app():
 
         if st.button("Executar VKP2"):
             # Gera o arquivo VBS e executa o script
-            file_path = os.path.join(export_path, export_file + ".vbs")
+            file_path = os.path.join(export_path + export_file + ".vbs")
             vbs_file = vkp2_script(file_path, username, password, transaction, skus, store, start_date.strftime("%d.%m.%Y"), end_date.strftime("%d.%m.%Y"), export_path, export_file)
             run_sap_script(vbs_file)
             st.success("Script VKP2 executado com sucesso!")
@@ -49,10 +49,9 @@ def app():
             file_to_open = os.path.join(export_path + export_file)
             if os.path.exists(file_to_open):
                 st.write(f"O arquivo {file_to_open} foi encontrado.")
-                if st.button("Abrir arquivo exportado"):
-                    st.write("Dados exportados:")
-                    df = pd.read_csv(file_to_open)
-                    st.dataframe(df)
+                st.write("Dados exportados:")
+                df = pd.read_html(file_to_open, header=0)[0]
+                st.dataframe(df)
                     # except Exception as e:
                     #     st.error(f"Erro ao abrir o arquivo: {e}")
                     # else:
@@ -72,15 +71,15 @@ def app():
     # export_file = st.text_input("Nome do Arquivo Exportado", value="exported_data.xls")
 
         # Verifica se o arquivo foi criado e permite ao usuário abrir o arquivo exportado
-                    file_to_open = os.path.join(export_path, export_file)
-                    if os.path.exists(file_to_open):
-                        st.write(f"O arquivo {file_to_open} foi encontrado.")
-                        if st.button("Abrir arquivo exportado"):
-                            try:
-                                df = pd.read_excel(file_to_open)
-                                st.write("Dados exportados:")
-                                st.dataframe(df)
-                            except Exception as e:
+                file_to_open = os.path.join(export_path, export_file)
+                if os.path.exists(file_to_open):
+                    st.write(f"O arquivo {file_to_open} foi encontrado.")
+                    if st.button("Abrir arquivo exportado"):
+                        try:
+                            df = pd.read_excel(file_to_open)
+                            st.write("Dados exportados:")
+                            st.dataframe(df)
+                        except Exception as e:
                                 st.error(f"Erro ao abrir o arquivo: {e}")
                     else:
                         st.warning(f"O arquivo {file_to_open} não foi encontrado.")
