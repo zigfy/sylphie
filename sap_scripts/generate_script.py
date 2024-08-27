@@ -1,6 +1,6 @@
 import subprocess
 
-def create_vbs_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename):
+def vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename):
     vbs_script = f'''
 If Not IsObject(application) Then
    Set SapGuiAuto  = GetObject("SAPGUI")
@@ -52,3 +52,5 @@ session.findById("wnd[0]/usr/btn%_S_MATNR_%_APP_%-VALU_PUSH").press
     
     with open(file_path, 'a') as file:
         file.write(vbs_script)
+
+    return file_path

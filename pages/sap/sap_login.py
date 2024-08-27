@@ -2,10 +2,10 @@ import streamlit as st
 
 def login_screen():
     st.image("images\\logo.png", width=250)
-    st.title("Faça logon no SAP:")
+    st.title("Seu login de rede:")
 
-    username = st.text_input("Usuário SAP", type="password")
-    password = st.text_input("Senha SAP", type="password")
+    username = st.text_input("Usuário Rede", type="password")
+    password = st.text_input("Senha Rede", type="password")
     
     login_button = st.button("Login")
     
