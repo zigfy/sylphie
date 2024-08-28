@@ -8,7 +8,7 @@ from sap_scripts.run_script import run_sap_script
 from pages.sap.sap_login import login_screen
 
 def main():
-    st.set_page_config(page_title="Sylphie", page_icon="images\\logo.png")
+    st.set_page_config(page_title="Sylphie", page_icon="images\\logo.png", layout="wide")
 
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
