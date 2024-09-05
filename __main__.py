@@ -107,4 +107,21 @@ def app():
             parsed_itens = parser_csv(itens)
             st.write(f"Seu texto é: {parsed_itens}")
 
+    if transaction == "Preços":
+        st.write("Conferência de preços para alteração...")
+        mecs = st.selectbox("Mecânica de Preço:", ['De/Por', 'De/MSRP', 'Cancelar/Prorrogar'])
+        
+        if mecs == "De/Por":
+            file = st.file_uploader("Insira a planilha de alteração", type='xlsx')
+            if file is not None:
+                sheet = pd.read_excel(file, skiprows=1, engine='openpyxl')
+                sheet_pyxl = openpyxl.load_workbook(file)
+                pyxl_names = sheet_pyxl.sheetnames
+                st.write(pyxl_names)
+                request = sheet_pyxl['Solicitados'] 
+                st.write(request)
+                file_details = {"Filename": file.name, "FileType":file.type, "Size": file.size}
+                st.write(file_details)
+                # st.dataframe(sheet) # just for logging
+
 main()
