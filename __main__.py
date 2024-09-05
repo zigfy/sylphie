@@ -21,7 +21,6 @@ def main():
         app()
 
 def app():
-    st.title("Sylphie: automatização SAP")
     st.write("Bem-vindo! Selecione a transação desejada.")
 
             # Caixinha de pesquisa para as transações
@@ -118,10 +117,45 @@ def app():
                 sheet_pyxl = openpyxl.load_workbook(file)
                 pyxl_names = sheet_pyxl.sheetnames
                 st.write(pyxl_names)
-                request = sheet_pyxl['Solicitados'] 
-                st.write(request)
+                requested = sheet_pyxl['Solicitados'] #worksheet pricing changer
+                st.write(requested)
                 file_details = {"Filename": file.name, "FileType":file.type, "Size": file.size}
                 st.write(file_details)
                 # st.dataframe(sheet) # just for logging
+                st.write(requested['B1'].value)
+
+                # catch all 'sku sap' column
+                skus = []
+                st.write(requested.max_row)
+
+                def column_value(requested, column) -> list:
+                    last_row = requested.max_row
+                    for i in reversed(range(1, last_row)):
+                        matrix = requested[f'{column}{i}'].value
+                        if matrix == None:
+                            st.write('empty column')
+                            print('empty column')
+                        else:
+                            st.write(i, "and", last_row, "first data found:", matrix)
+
+
+                column_value(requested, column="B")
+
+                def find_last_row(sheet_pyxl, column):
+                    """
+                    Returns the last row of a given column that has a value in it.
+                    Empty rows before the last row are allowed.
+                    ws: a worksheet object
+                    column: a name, such as 'A'
+                    """
+                    selected_column = sheet_pyxl[column]
+                    # Start at bottom of column
+                    for row in range(len(selected_column)-1, -1, -1):
+                        if selected_column[row].value != None:
+                            return row + 1 # +1 since Excel row numbering starts at 1
+                    return None # Empty column
+
+                # do vkp2 thing
+                # return the prices on an array or list or something like it
 
 main()
