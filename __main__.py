@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import openpyxl
+import datetime
 import sys
 import os
 
@@ -23,7 +25,7 @@ def app():
     st.write("Bem-vindo! Selecione a transação desejada.")
 
             # Caixinha de pesquisa para as transações
-    transaction = st.selectbox("Transação", ["VKP2", "DataFrames", "SE16N", "VKPB", "VKP6", "ZSD063"])
+    transaction = st.selectbox("Transação", ["VKP2", "DataFrames", "Preços", "Parser", "SE16N", "VKP6", "ZSD063"])
 
     if transaction == "VKP2":
                 # Mostra a tela para a transação VKP2
@@ -50,7 +52,7 @@ def app():
             if os.path.exists(file_to_open):
                 st.write(f"O arquivo {file_to_open} foi encontrado.")
                 st.write("Dados exportados:")
-                df = pd.read_html(file_to_open, header=0)[0]
+                df = pd.read_excel(file_to_open, header=0)[0]
                 st.dataframe(df)
                     # except Exception as e:
                     #     st.error(f"Erro ao abrir o arquivo: {e}")
@@ -91,5 +93,18 @@ def app():
         if st.button('abrir arquivo'):
             df = pd.read_html(path, header=0)[0]
             st.dataframe(df)
+
+    if transaction == "Parser":
+        st.write('parser CSV para consultas sql e super tático')
+        itens = st.text_input('insira os SKUs para parsear...')
+        def parser_csv(input):
+            # Separar os valores por linha, remover espaços em branco e aspas simples
+            lines = [line.strip() for line in input.split()]
+            # Adicionar aspas simples em cada valor e juntar com vírgulas
+            parsed = ', '.join(f"'{line}'" for line in lines)
+            return parsed
+        if itens:
+            parsed_itens = parser_csv(itens)
+            st.write(f"Seu texto é: {parsed_itens}")
 
 main()
