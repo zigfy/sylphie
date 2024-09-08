@@ -8,6 +8,7 @@ import os
 from pages.sylphie.vkp2 import *
 from pages.sylphie.parser import *
 from pages.sylphie.pricing import *
+from pages.sylphie.dataframes import *
 from pages.sylphie.sap_login import login_screen
 from sap_scripts.generate_script import vkp2_script
 from sap_scripts.run_script import run_sap_script
@@ -34,11 +35,7 @@ def app():
         vkp2_home(transaction)
 
     if transaction == "DataFrames":
-        st.write("Reading dataframes according to the path below:")
-        path = st.text_input("Insira o caminho do arquivo...")
-        if st.button('abrir arquivo'):
-            df = pd.read_html(path, header=0)[0]
-            st.dataframe(df)
+        open_dataframe()
 
     if transaction == "Parser":
         parser()
