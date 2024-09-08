@@ -8,9 +8,10 @@ import os
 from functions.sheets import *
 from sap_scripts.generate_script import vkp2_script
 from sap_scripts.run_script import run_sap_script
-from pages.sap.sap_login import login_screen
+from pages.sylphie.sap_login import login_screen
 
 def alter_pricing():
+    st.write("Conferência de preços para alteração...")
     mecs = st.selectbox("Mecânica de Preço:", ['De/Por', 'De/MSRP', 'Cancelar/Prorrogar']) 
     if mecs == "De/Por":
         file = st.file_uploader("Insira a planilha de alteração", type='xlsx')
