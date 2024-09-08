@@ -126,35 +126,20 @@ def app():
 
                 # catch all 'sku sap' column
                 skus = []
-                st.write(requested.max_row)
+                st.write("max_rows -> ",requested.max_row)
 
                 def column_value(requested, column) -> list:
                     last_row = requested.max_row
+                    data = []
                     for i in reversed(range(1, last_row)):
                         matrix = requested[f'{column}{i}'].value
-                        if matrix == None:
-                            st.write('empty column')
-                            print('empty column')
-                        else:
-                            st.write(i, "and", last_row, "first data found:", matrix)
-
+                        if matrix != None:
+                            st.write(i, "of", last_row, " data found:", matrix)
+                            # we could increase performance using btree or b+tree
+                            data.append(matrix)
+                    st.write(data)
 
                 column_value(requested, column="B")
-
-                def find_last_row(sheet_pyxl, column):
-                    """
-                    Returns the last row of a given column that has a value in it.
-                    Empty rows before the last row are allowed.
-                    ws: a worksheet object
-                    column: a name, such as 'A'
-                    """
-                    selected_column = sheet_pyxl[column]
-                    # Start at bottom of column
-                    for row in range(len(selected_column)-1, -1, -1):
-                        if selected_column[row].value != None:
-                            return row + 1 # +1 since Excel row numbering starts at 1
-                    return None # Empty column
-
                 # do vkp2 thing
                 # return the prices on an array or list or something like it
 
