@@ -47,3 +47,13 @@ def alter_pricing():
             # vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename)
             # do vkp2 thing
             # return the prices on an array or list or something like it
+            requested_data = list(zip(reversed(skus), reversed(start_date), reversed(end_date), reversed(price_policy), reversed(de_prices), reversed(por_prices), reversed(arred_prices)))
+            requested_dataframe = pd.DataFrame(requested_data)
+            st.write(requested_dataframe)
+            with pd.ExcelWriter('planilhas/transformed.xlsx',
+                mode='w') as writer:  # doctest: +SKIP
+                requested_dataframe.to_excel(writer, sheet_name='teste3')
+
+            # next steps -> remove 1st column, 1st row from transformed.xlsx
+            # then -> create a function createDataframe by using getColumn_values
+            # then -> use the data to vkp2
