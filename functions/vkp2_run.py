@@ -31,3 +31,6 @@ def vkp2_runner(username, password, transaction, skus, store, start_date, end_da
                 st.error(f"Erro ao abrir o arquivo: {e}")
             else:
                 st.warning(f"O arquivo {file_to_open} não foi encontrado.")
+
+    # pd.Dataframe.to_excel()
+    # return csv_sap
