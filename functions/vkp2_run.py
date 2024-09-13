@@ -6,11 +6,14 @@ import sys
 import os
 
 from sap_scripts.generate_script import *
+from functions.sheets import *
 from sap_scripts.run_script import run_sap_script
 
 def vkp2_runner(username, password, transaction, skus, store, start_date, end_date, export_path, filename):
     # Gera o arquivo VBS e executa o script
-    file_path = os.path.join(export_path + filename + ".vbs")
+    start_date = format_date(start_date)
+    end_date = format_date(end_date)
+    file_path = os.path.join(export_path + filename)
     vbs_file = cret_vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename)
     run_sap_script(vbs_file)
     print('run sap foi executado...')
@@ -30,7 +33,7 @@ def vkp2_runner(username, password, transaction, skus, store, start_date, end_da
             except Exception as e:
                 st.error(f"Erro ao abrir o arquivo: {e}")
             else:
-                st.warning(f"O arquivo {file_to_open} não foi encontrado.")
+                st.error(f"O arquivo {file_to_open} não foi encontrado.")
 
     # pd.Dataframe.to_excel()
     # return csv_sap

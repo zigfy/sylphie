@@ -59,7 +59,8 @@ session.findById("wnd[0]").sendVKey 0
 
 ########################################################
 
-def cret_vkp2_script(file_path, username: str, password: str, transaction: str, skus: list, store, start_date, end_date, export_path, filename: str):
+def cret_vkp2_script(file_path, username: str, password: str, transaction: str, skus: list, store, start_date, end_date, export_path, filename: str) -> list:
+   vbs_files = []
    chunk_size = 100
    skus_chunks = [skus[i:i + chunk_size] for i in range(0, len(skus), chunk_size)]
    files = []
@@ -118,4 +119,6 @@ def cret_vkp2_script(file_path, username: str, password: str, transaction: str, 
       with open(f"{file_path}_lote_{idx+1}.vbs", 'w') as file:
          file.write(vbs_script)
       
-   return file_path
+      vbs_files.append(f"{export_path + filename}_lote_{idx+1}.vbs")
+
+   return vbs_files
