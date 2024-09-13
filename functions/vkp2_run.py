@@ -14,9 +14,11 @@ def vkp2_runner(username, password, transaction, skus, store, start_date, end_da
     start_date = format_date(start_date)
     end_date = format_date(end_date)
     file_path = os.path.join(export_path + filename)
-    vbs_file = cret_vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename)
-    run_sap_script(vbs_file)
-    print('run sap foi executado...')
+    vbs_files, htm_files = cret_vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename)
+    run_sap_script(vbs_files)
+    st.write(htm_files)
+    htm_toexcel(htm_files, file_path)
+    print('L21: run sap foi executado...')
 
     # Mostra opção para abrir o arquivo exportado
     file_to_open = os.path.join(export_path + filename)
