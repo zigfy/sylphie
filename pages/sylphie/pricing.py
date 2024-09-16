@@ -4,7 +4,7 @@ import openpyxl
 import datetime as dt
 import sys
 import os
-
+from openpyxl.utils.dataframe import dataframe_to_rows
 from functions.sheets import *
 from sap_scripts.generate_script import *
 from sap_scripts.run_script import run_sap_script
@@ -12,7 +12,6 @@ from pages.sylphie.sap_login import login_screen
 from functions.vkp2_run import *
 
 def alter_pricing():
-    st.write("Conferência de preços para alteração...")
     mecs = st.selectbox("Mecânica de Preço:", ['De/Por', 'De/MSRP', 'Cancelar/Prorrogar']) 
     if mecs == "De/Por":
         today = dt.datetime.today().strftime("%d/%m/%Y")
@@ -20,7 +19,7 @@ def alter_pricing():
         file_path = st.text_input("Insira o caminho da pasta onde você está trabalhando: ")
         username = st.text_input("Usuário SAP", type="password")
         password = st.text_input("Senha SAP", type="password")
-        if file is not None:
+        if st.button('Executar automação'):
             sheet = pd.read_excel(file, skiprows=1, engine='openpyxl')
             sheet_pyxl = openpyxl.load_workbook(file)
             pyxl_names = sheet_pyxl.sheetnames
@@ -67,26 +66,39 @@ def alter_pricing():
                                       reversed(start_date), reversed(end_date), reversed(price_policy), reversed(de_prices),
                                       reversed(por_prices), reversed(arred_prices)))
             requested_dataframe = pd.DataFrame(requested_data, columns=headers)
-            st.write(requested_dataframe)
-            with pd.ExcelWriter(f'planilhas/tomorrow{file.name}',
-                mode='w') as writer:
-                requested_dataframe.to_excel(writer, sheet_name='testtando')
+            # with pd.ExcelWriter(f'planilhas/tomorrow{file.name}',
+            #    mode='w') as writer:
+            #    requested_dataframe.to_excel(writer, sheet_name='testtando')
 
             # next steps -> remove 1st column, 1st row from transformed.xlsx 
             # then -> create a function createDataframe by using getColumn_values
             # then -> use the data to vkp2 WORKING NOW
             # pegar todas colunas OK
-            # ver se o dataframe funciona com todas
-            # busca vkp2
-            # funcao vkp2 retorna path-like or file-like object
+            # ver se o dataframe funciona com todas OK
+            # busca vkp2 OK
+            # funcao vkp2 retorna path-like or file-like object OK (retornando dataframe)
             # getColumn_values para cada coluna em vkp2()
-            # bater colunas de preço DE - fazer uma matriz 
+            # bater colunas de preço DE - fazer uma matriz
             # com todas as colunas, e manipular as posições
             # por fim, escrever o dataframe da vkp2 no arquivo result que terá duas abas
             # solicitados e vkp2
+            htm_df = vkp2_runner(username=username, password=password, transaction='VKP2', skus=skus, store='1950', start_date=start_date[1], end_date=start_date[1], export_path=file_path, filename='SYLP1')
+
+            # Apply the function to columns J and Q
+            htm_df['Montante'] = htm_df['Montante'].apply(clean_currency)
+            htm_df['Montante.1'] = htm_df['Montante.1'].apply(clean_currency)
+            htm_df['Montante'] = htm_df['Montante'].apply(insert_comma)
+            htm_df['Montante.1'] = htm_df['Montante.1'].apply(insert_comma)
+
+            if 'VKP2' not in sheet_pyxl.sheetnames:
+                sheet_vkp2 = sheet_pyxl.create_sheet('VKP2')
+            for row in dataframe_to_rows(htm_df, index=False, header=True):
+                sheet_pyxl['VKP2'].append(row)
+            save_path = f"{file_path}\\{file.name}"
+            sheet_pyxl.save(save_path)
+            st.success(f"Arquivo salvo com sucesso em: {save_path}")
+            st.write(htm_df)
+            #sheet_pyxl['']
             # último check -> preço arred deve ser menor que preço de.
             # depois disso, essa etapa está pronta.
-            # resta organizar os caminhos dos arquivos (onde serão salvos e manipulados) 
-
-            htm_file = vkp2_runner(username=username, password=password, transaction='VKP2', skus=skus, store='1950', start_date=start_date[1], end_date=start_date[1], export_path=file_path, filename='SYLP1.htm')
-            st.write(htm_file)
+            # resta organizar os caminhos dos arquivos (onde serão salvos e manipulados)

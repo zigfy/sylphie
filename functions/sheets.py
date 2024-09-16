@@ -52,3 +52,22 @@ def htm_toexcel(htm_files: list, full_path: str):
     else:
         print("Nenhum dado foi encontrado nos arquivos HTML.")
         return None
+
+def depor_compare(requested, vkp2):
+    print('on development')
+
+def clean_currency(value):
+    if pd.isna(value) or value == '' or value is None:
+        return ''  # return empty string for missing values
+    if isinstance(value, str):
+        # remove thousands separator (.)
+        value = value.replace('.', '')
+        # replace decimal comma (,) with a period (.)
+        # value = value.replace(',', '.')
+    return float(value)
+
+def insert_comma(value):
+    if pd.isna(value) or value == '' or value is None:
+        return ''  # treatment for empty, None, or NaN values
+    value = str(int(value))  # remove pontos decimais, convertendo para inteiro antes
+    return value[:-2] + ',' + value[-2:]  # coloca a vírgula antes dos dois últimos dígitos
