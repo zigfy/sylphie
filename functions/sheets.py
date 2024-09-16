@@ -18,6 +18,7 @@ def getColumn_values(requested, column) -> list:
     # st.write(data)
     return data
 
+
 def format_date(date_input):
     if isinstance(date_input, datetime):
         return date_input.strftime('%d.%m.%Y')
@@ -31,30 +32,29 @@ def format_date(date_input):
             continue
     raise ValueError(f"Data no formato inválido: {date_input}")
 
+
 def htm_toexcel(htm_files: list, full_path: str):
     htm_dfs = [] 
     for htm_file in htm_files:
         try:
-            dfs = pd.read_html(htm_file, header=0)
+            dfs = pd.read_html(htm_file, header=0, decimal=',')
             htm_dfs.extend(dfs)
         except Exception as e:
             print(f"Erro ao processar o arquivo {htm_file}: {e}")
     
     if htm_dfs:
-    # Concatena todos os DataFrames
         df_final = pd.concat(htm_dfs, ignore_index=True)
-
-        # Salva o DataFrame final em uma planilha Excel
         df_final.to_excel(f"{full_path}.xlsx", index=False)
-
         print(f"Dados combinados salvos em {full_path}")
         return df_final
     else:
         print("Nenhum dado foi encontrado nos arquivos HTML.")
         return None
 
+
 def depor_compare(requested, vkp2):
     print('on development')
+
 
 def clean_currency(value):
     if pd.isna(value) or value == '' or value is None:
@@ -64,10 +64,22 @@ def clean_currency(value):
         value = value.replace('.', '')
         # replace decimal comma (,) with a period (.)
         # value = value.replace(',', '.')
-    return float(value)
+    return value
+
 
 def insert_comma(value):
-    if pd.isna(value) or value == '' or value is None:
-        return ''  # treatment for empty, None, or NaN values
-    value = str(int(value))  # remove pontos decimais, convertendo para inteiro antes
+    #if pd.isna(value) or value == '' or value is None:
+    #    return ''  # treatment for empty, None, or NaN values
+    value = str(value)  # remove pontos decimais, convertendo para inteiro antes
     return value[:-2] + ',' + value[-2:]  # coloca a vírgula antes dos dois últimos dígitos
+
+
+def parser_csv(input: str, zerofill: bool) -> str:
+    lines = [line.strip() for line in input.split()]
+    
+    if not zerofill:
+        parsed = ', '.join(f"'{line}'" for line in lines)
+    else:
+        parsed = ', '.join(f"'{line.zfill(18)}'" for line in lines)
+    
+    return parsed
