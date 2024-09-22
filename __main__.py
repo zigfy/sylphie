@@ -10,7 +10,7 @@ from pages.sylphie.parser import *
 from pages.sylphie.pricing import *
 from pages.sylphie.dataframes import *
 from pages.sylphie.sap_login import login_screen
-from sap_scripts.generate_script import vkp2_script
+from sap_scripts.generate_script import *
 from sap_scripts.run_script import run_sap_script
 
 def main():

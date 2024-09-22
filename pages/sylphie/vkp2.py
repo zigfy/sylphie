@@ -5,8 +5,8 @@ import datetime
 import sys
 import os
 
-from sap_scripts.generate_script import vkp2_script
-from sap_scripts.run_script import run_sap_script
+from sap_scripts.generate_script import *
+from sap_scripts.run_script import *
 
 def vkp2_home(transaction):
     st.write("Preencha os detalhes para VKP2")
@@ -22,7 +22,7 @@ def vkp2_home(transaction):
     if st.button("Executar VKP2"):
         # Gera o arquivo VBS e executa o script
         file_path = os.path.join(export_path + export_file + ".vbs")
-        vbs_file = vkp2_script(file_path, username, password, transaction, skus, store, start_date.strftime("%d.%m.%Y"), end_date.strftime("%d.%m.%Y"), export_path, export_file)
+        vbs_file = create_vkp2_script(file_path, username, password, transaction, skus, store, start_date.strftime("%d.%m.%Y"), end_date.strftime("%d.%m.%Y"), export_path, export_file)
         run_sap_script(vbs_file)
         st.success("Script VKP2 executado com sucesso!")
 
