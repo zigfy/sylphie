@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import openpyxl
 import os
+import csv
 
 def getColumn_values(requested, column) -> list:
     last_row = requested.max_row
@@ -83,3 +84,14 @@ def parser_csv(input: str, zerofill: bool) -> str:
         parsed = ', '.join(f"'{line.zfill(18)}'" for line in lines)
     
     return parsed
+
+
+def pleno_csv(file):
+    itens_pleno = {}
+    with open(file) as csvf:
+        pdv_list = csv.DictReader(csvf, delimiter=",")
+        for line in pdv_list:
+            for col, valor in line.items():
+                itens_pleno.setdefault(col, []).append(valor)
+    del itens_pleno['Finalidade'], itens_pleno['Custo Praticado'], itens_pleno['Margem Zero'], itens_pleno['Margem Venda'], itens_pleno['Margem Objetivo'], itens_pleno['Estq. SeguranÃ§a'], itens_pleno['Estq. Troca'], itens_pleno["Estq. MÃ¡x"]
+    return itens_pleno
