@@ -57,8 +57,8 @@ def alter_pricing():
             de_prices = getColumn_values(requested, column="I")
             por_prices = getColumn_values(requested, column="J")
             arred_prices = getColumn_values(requested, column="K")
-            discount_column = ((por_prices[2] / de_prices[2]) - 1) #"L" it needs a loop to calculate formula
-            st.write(discount_column)
+            # discount_column = ((por_prices[2] / de_prices[2]) - 1) #"L" it needs a loop to calculate formula
+            # st.write(discount_column)
             # vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename)
             # do vkp2 thing
             # return the prices on an array or list or something like it
@@ -82,13 +82,13 @@ def alter_pricing():
             # com todas as colunas, e manipular as posições
             # por fim, escrever o dataframe da vkp2 no arquivo result que terá duas abas
             # solicitados e vkp2
-            htm_df = vkp2_runner(username=username, password=password, transaction='VKP2', skus=skus, store='1950', start_date=start_date[1], end_date=start_date[1], export_path=file_path, filename='SYLP1')
+            htm_df = vkp2_runner(username=username, password=password, transaction='VKP2', skus=skus, store='1950', start_date=start_date[0], end_date=start_date[0], export_path=file_path, filename='SYLP1')
 
             # Apply the function to columns J and Q
-            htm_df['Montante'] = htm_df['Montante'].apply(clean_currency)
-            htm_df['Montante.1'] = htm_df['Montante.1'].apply(clean_currency)
-            htm_df['Montante'] = htm_df['Montante'].apply(insert_comma)
-            htm_df['Montante.1'] = htm_df['Montante.1'].apply(insert_comma)
+            # htm_df['Montante'] = htm_df['Montante'].apply(clean_currency)
+            # htm_df['Montante.1'] = htm_df['Montante.1'].apply(clean_currency)
+            # htm_df['Montante'] = htm_df['Montante'].apply(insert_comma)
+            # htm_df['Montante.1'] = htm_df['Montante.1'].apply(insert_comma)
 
             if 'VKP2' not in sheet_pyxl.sheetnames:
                 sheet_vkp2 = sheet_pyxl.create_sheet('VKP2')
