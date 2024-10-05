@@ -5,17 +5,17 @@ import openpyxl
 import os
 import csv
 
-def getColumn_values(requested, column) -> list:
-    last_row = requested.max_row
+def getColumn_values(requested_worksheet, column) -> list:
+    last_row = requested_worksheet.max_row
     data = []
     y = 0
     for i in reversed(range(1, last_row)):
-        matrix = requested[f'{column}{i}'].value
+        matrix = requested_worksheet[f'{column}{i}'].value
         if matrix != None: # and matrix != 'SKU SAP':
             y += 1
             # we could increase performance using btree or b+tree
             data.append(matrix)
-    st.write(y, "of", last_row, " data found:", matrix)
+    st.info(body=f'{y} of {last_row} data found: {matrix}')
     # st.write(data)
     return data
 
@@ -84,14 +84,3 @@ def parser_csv(input: str, zerofill: bool) -> str:
         parsed = ', '.join(f"'{line.zfill(18)}'" for line in lines)
     
     return parsed
-
-
-def pleno_csv(file):
-    itens_pleno = {}
-    with open(file) as csvf:
-        pdv_list = csv.DictReader(csvf, delimiter=",")
-        for line in pdv_list:
-            for col, valor in line.items():
-                itens_pleno.setdefault(col, []).append(valor)
-    del itens_pleno['Finalidade'], itens_pleno['Custo Praticado'], itens_pleno['Margem Zero'], itens_pleno['Margem Venda'], itens_pleno['Margem Objetivo'], itens_pleno['Estq. SeguranÃ§a'], itens_pleno['Estq. Troca'], itens_pleno["Estq. MÃ¡x"]
-    return itens_pleno
