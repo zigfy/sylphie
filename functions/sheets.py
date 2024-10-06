@@ -5,7 +5,7 @@ import openpyxl
 import os
 import csv
 
-def getColumn_values(requested_worksheet, column) -> list:
+def getColumn_values(requested_worksheet, column: str) -> tuple:
     last_row = requested_worksheet.max_row
     data = []
     y = 0
@@ -16,8 +16,7 @@ def getColumn_values(requested_worksheet, column) -> list:
             # we could increase performance using btree or b+tree
             data.append(matrix)
     st.info(body=f'{y} of {last_row} data found: {matrix}')
-    # st.write(data)
-    return data
+    return tuple(reversed(data))
 
 
 def format_date(date_input):
