@@ -14,27 +14,30 @@ from functions.vkp2_run import *
 def difusao():
     tday = dt.date.today()
     today = tday.strftime("%d/%m/%Y")
-    date = dt.datetime(2024, 10, 4, 00, 00, 00)
+    date = dt.datetime(2024, 10, 17, 00, 00, 00)
     print('conferencia de difusao de preços => pleno e vtex')
+    choosed_date = st.date_input('Data da difusão para conferência')
     csvf = st.file_uploader("insira o .csv do Pleno", type='csv')
     base_depor = st.file_uploader("planilha base", type='xlsx')
-    if base_depor: depor_df = pd.read_excel(base_depor, sheet_name=None, skiprows=1)
-    if csvf: tday_prices = pd.read_csv(csvf, delimiter=',', decimal='.')
     buffer = io.BytesIO()
+    month = st.selectbox("Selecione a aba da planilha", ["GERAL - Outubro24", "GERAL - Novembro24", "GERAL - Dezembro24"])
 
     if st.button('Conferir'):
-        out24 = pd.read_excel(base_depor, sheet_name='Outubro24', engine='openpyxl', skiprows=2)
-        print('starting merge...')
         if not base_depor: st.info("Você precisa enviar a planilha base para conferência do DE / POR.", icon=':material/warning:')
+        if base_depor: depor_df = pd.read_excel(base_depor, sheet_name=None, skiprows=2)
+        if csvf: tday_prices = pd.read_csv(csvf, delimiter=',', decimal='.')
+        # out24 = pd.read_excel(base_depor, sheet_name=month, engine='openpyxl', skiprows=3)
+        print('starting merge...')
         
+        # escrevendo a planilha base no buffer para manipular com mais eficiencia
         with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
             for item, df in depor_df.items():
                 df.to_excel(float_format="%.2f",sheet_name=item, excel_writer=writer, engine='xlsxwriter')
             tday_prices.to_excel(float_format="%.2f", sheet_name='Pleno', excel_writer=writer, engine='xlsxwriter')
         
-        new_df = openpyxl.load_workbook(buffer)
-        out24 = new_df['Outubro24']
-        pleno = new_df['Pleno']
+        new_df = openpyxl.load_workbook(buffer) # creates a df with the file on buffer
+        out24 = new_df[month] # selects the tab we'll work on
+        pleno = new_df['Pleno'] # selects the tab we'll work on
 
         date_requested = getColumn_values(out24, column='C'),
         sku = getColumn_values(out24, 'D'),
@@ -59,9 +62,7 @@ def difusao():
                             pl_de_price, pl_por_price, pl_estoque]
 
         used_rows = []
-        for row, (start, end) in enumerate(zip(start_date[1:], end_date[1:])):
-            if pd.to_datetime(start).date() <= date <= pd.to_datetime(end).date():
-                used_rows.append(row)
+        for row, i in start_date:
             print(row)
         print(used_rows)
         # for value in used_colunms[start_date]:
