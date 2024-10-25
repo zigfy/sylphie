@@ -5,7 +5,11 @@ import openpyxl
 import os
 import csv
 
-def getColumn_values(requested_worksheet, column: str) -> tuple:
+def getColumn_value(sheet, column):
+    # Extrair valores da coluna ignorando o cabeçalho
+    return [cell.value for cell in sheet[column] if cell.row != 1]  # Pulando o cabeçalho
+
+def getColumn_values(requested_worksheet, column: str) -> list:
     last_row = requested_worksheet.max_row
     data = []
     y = 0
@@ -16,7 +20,7 @@ def getColumn_values(requested_worksheet, column: str) -> tuple:
             # we could increase performance using btree or b+tree
             data.append(matrix)
     st.info(body=f'{y} of {last_row} data found: {matrix}')
-    return tuple(reversed(data))
+    return reversed(data)
 
 
 def format_date(date_input):
