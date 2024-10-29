@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import json
 import openpyxl
 import os
 import csv
@@ -87,3 +88,32 @@ def parser_csv(input: str, zerofill: bool) -> str:
         parsed = ', '.join(f"'{line.zfill(18)}'" for line in lines)
     
     return parsed
+
+def json_to_table(file: str) -> list:
+    produtos_data = []
+    precos_fixos_data = []
+    with open(file, 'r') as raw_json:
+        data = json.load(raw_json)
+
+    for item_list in data:
+        for item in item_list:
+            produtos_data.append({
+                "COD_VTEX": item["itemId"],
+                "PRECO_DE": item["listPrice"],
+                "PRECO_POR": item["costPrice"],
+            })
+            
+            for price in item["fixedPrices"]:
+                precos_fixos_data.append({
+                    "COD_VTEX": item["itemId"],
+                    "POLITICA": price["tradePolicyId"],
+                    "PRECO_DE": price["listPrice"],
+                    "PRECO_VIGENTE": price["value"],
+                    "DATA_INICIO": price["dateRange"]["from"],
+                    "DATA_FIM": price["dateRange"]["to"]
+                })
+
+    produtos_df = pd.DataFrame(produtos_data)
+    precos_fixos_df = pd.DataFrame(precos_fixos_data)
+
+    return produtos_df, precos_fixos_df
