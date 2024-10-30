@@ -59,7 +59,7 @@ session.findById("wnd[0]").sendVKey 0
 
 ########################################################
 
-def cret_vkp2_script(file_path, username: str, password: str, transaction: str, skus: list, store, start_date, end_date, export_path, filename: str) -> list:
+def cret_vkp2_script(file_path: str, username: str, password: str, transaction: str, skus: list, store: str, start_date, end_date, export_path: str, filename: str) -> list:
    vbs_files = []
    htm_files = []
    chunk_size = 100

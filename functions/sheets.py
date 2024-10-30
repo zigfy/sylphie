@@ -1,22 +1,27 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import json
 import openpyxl
 import os
+import csv
 
-def getColumn_values(requested, column) -> list:
-    last_row = requested.max_row
+def getColumn_value(sheet, column):
+    # Extrair valores da coluna ignorando o cabeçalho
+    return [cell.value for cell in sheet[column] if cell.row != 1]  # Pulando o cabeçalho
+
+def getColumn_values(requested_worksheet, column: str) -> list:
+    last_row = requested_worksheet.max_row
     data = []
     y = 0
     for i in reversed(range(1, last_row)):
-        matrix = requested[f'{column}{i}'].value
+        matrix = requested_worksheet[f'{column}{i}'].value
         if matrix != None: # and matrix != 'SKU SAP':
             y += 1
             # we could increase performance using btree or b+tree
             data.append(matrix)
-    st.write(y, "of", last_row, " data found:", matrix)
-    # st.write(data)
-    return data
+    st.info(body=f'{y} of {last_row} data found: {matrix}')
+    return reversed(data)
 
 
 def format_date(date_input):
@@ -83,3 +88,32 @@ def parser_csv(input: str, zerofill: bool) -> str:
         parsed = ', '.join(f"'{line.zfill(18)}'" for line in lines)
     
     return parsed
+
+def json_to_table(file: str) -> list:
+    produtos_data = []
+    precos_fixos_data = []
+    with open(file, 'r') as raw_json:
+        data = json.load(raw_json)
+
+    for item_list in data:
+        for item in item_list:
+            produtos_data.append({
+                "COD_VTEX": item["itemId"],
+                "PRECO_DE": item["listPrice"],
+                "PRECO_POR": item["costPrice"],
+            })
+            
+            for price in item["fixedPrices"]:
+                precos_fixos_data.append({
+                    "COD_VTEX": item["itemId"],
+                    "POLITICA": price["tradePolicyId"],
+                    "PRECO_DE": price["listPrice"],
+                    "PRECO_VIGENTE": price["value"],
+                    "DATA_INICIO": price["dateRange"]["from"],
+                    "DATA_FIM": price["dateRange"]["to"]
+                })
+
+    base_price = pd.DataFrame(produtos_data)
+    policy_price = pd.DataFrame(precos_fixos_data)
+
+    return base_price, policy_price

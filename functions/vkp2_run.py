@@ -16,7 +16,6 @@ def vkp2_runner(username, password, transaction, skus, store, start_date, end_da
     file_path = os.path.join(export_path + filename)
     vbs_files, htm_files = cret_vkp2_script(file_path, username, password, transaction, skus, store, start_date, end_date, export_path, filename)
     run_sap_script(vbs_files)
-    st.write(htm_files)
     vkp2_df = htm_toexcel(htm_files, file_path)
     print('L21: VKP2 dataframe saved...')
 
