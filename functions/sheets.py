@@ -113,7 +113,7 @@ def json_to_table(file: str) -> list:
                     "DATA_FIM": price["dateRange"]["to"]
                 })
 
-    produtos_df = pd.DataFrame(produtos_data)
-    precos_fixos_df = pd.DataFrame(precos_fixos_data)
+    base_price = pd.DataFrame(produtos_data)
+    policy_price = pd.DataFrame(precos_fixos_data)
 
-    return produtos_df, precos_fixos_df
+    return base_price, policy_price
