@@ -22,4 +22,9 @@ def query(sql: str):
                 data.append(result)
         return data
     
-print(query("select * from bi_ods.zposcst102 where dtopr in ('20241024')"))
+# print(query("select * from TMP_ACOES_COMERCIAIS where rownum <5"))
+
+def diffusion_query(date, werks):
+    sql = f"SELECT * FROM BI_DW.VOLUME_DIFUSAO_PRECO WHERE data_de IN ('{date}') AND WERKS IN ('{werks}')"
+    diffusion_table = query(sql)
+    return diffusion_table

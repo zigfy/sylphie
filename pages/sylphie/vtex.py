@@ -18,9 +18,6 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 diffusion_file = r"planilhas/diffusion/difusao 31.10 1051.dsv"
 products_file = r"planilhas/produtos vtex.csv"
 
-def diffusion_query():
-    base = ""
-
 
 def vtex_diffusion():
     # próximos passos: 1. efetuar query da difusão; pegar o centro 1950; 
