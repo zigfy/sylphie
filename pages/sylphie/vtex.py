@@ -15,8 +15,8 @@ from functions.vkp2_run import *
 from sap_scripts.generate_script import *
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-diffusion_file = r"planilhas/difusao 29.10.dsv"
-products_file = r"planilhas/DE - PARA PRODUTOS - ITENS 1P.csv"
+diffusion_file = r"planilhas/diffusion/difusao 31.10 1051.dsv"
+products_file = r"planilhas/produtos vtex.csv"
 
 def diffusion_query():
     base = ""
@@ -30,8 +30,9 @@ def vtex_diffusion():
     tday_table = tday.strftime('%d/%m/%y') # Output: 28/10/24 | use it when you extract from Oracle
     st.write(f"Conferência de preços SAP x VTEX. Dia atual: {tday_rundeck}")
     diff_df = pd.read_csv(diffusion_file, delimiter=';', decimal=',') # diffusion dataframe
-    products_df = pd.read_csv(products_file, delimiter=',') # file with the comparison of SAP vs VTEX code
-    products_df = products_df.astype({'COD SAP': str, 'COD VTEX': str})
+    products_df = pd.read_csv(products_file, delimiter=';', decimal=',') # file with the comparison of SAP vs VTEX code
+    products_df['COD SAP'] = products_df['COD SAP'].fillna(0).astype(int).astype(str)
+    products_df['COD VTEX'] = products_df['COD VTEX'].fillna(0).astype(int).astype(str)
     
     ecom = sqldf(f"select * from diff_df where WERKS in ('1950') and DATA_DE IN ('{tday_table}')") # does a sqlquery on diff_df
     ecom = ecom.astype({'MATNR': str, 'WERKS': str})
