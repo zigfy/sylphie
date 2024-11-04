@@ -15,9 +15,6 @@ from functions.vkp2_run import *
 from sap_scripts.generate_script import *
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-diffusion_file = r"planilhas/diffusion/difusao 31.10 1051.dsv"
-products_file = r"planilhas/produtos vtex.csv"
-
 
 def vtex_diffusion():
     # próximos passos: 1. efetuar query da difusão; pegar o centro 1950; 
@@ -25,14 +22,27 @@ def vtex_diffusion():
     tday = dt.date.today() # same as %Y-%d-%m
     tday_rundeck = tday.strftime('%d-%m-%Y') # Output: 28-10-2024 | use it when you extract from google storage
     tday_table = tday.strftime('%d/%m/%y') # Output: 28/10/24 | use it when you extract from Oracle
-    st.write(f"Conferência de preços SAP x VTEX. Dia atual: {tday_rundeck}")
+    diffusion_file = fr"planilhas/diffusion/difusao {tday_rundeck}.dsv"
+    products_file = fr"planilhas/produtos vtex.csv"
     diff_df = pd.read_csv(diffusion_file, delimiter=';', decimal=',') # diffusion dataframe
     products_df = pd.read_csv(products_file, delimiter=';', decimal=',') # file with the comparison of SAP vs VTEX code
     products_df['COD SAP'] = products_df['COD SAP'].fillna(0).astype(int).astype(str)
     products_df['COD VTEX'] = products_df['COD VTEX'].fillna(0).astype(int).astype(str)
     
-    ecom = sqldf(f"select * from diff_df where WERKS in ('1950') and DATA_DE IN ('{tday_table}')") # does a sqlquery on diff_df
-    ecom = ecom.astype({'MATNR': str, 'WERKS': str})
+    st.write(f"Conferência de preços SAP x VTEX. Dia atual: {tday_rundeck}")
+    # old ecom_df creation method -> ecom = sqldf(f"select * from diff_df where WERKS in ('1950') and DATA_DE IN ('{tday_table}')") # does a sqlquery on diff_df
+    ecom = diffusion_query(date=tday_table, werks='1950')
+
+    ecom = pd.DataFrame(ecom, columns=['MATNR', 'WERKS', 'DATA_DE', 'DATA_ATE',
+                                       'VALIDADE', 'PRECO_ANT', 'PRECO_NOVO', 'TIPO'])
+    
+    ecom = ecom.astype({'MATNR': str, 'WERKS': str,
+                        'DATA_DE': 'datetime64[s]',
+                        'DATA_ATE': 'datetime64[s]'})
+    
+    ecom['DATA_DE'] = ecom['DATA_DE'].dt.strftime('%d/%m/%y')
+    ecom['DATA_ATE'] = ecom['DATA_ATE'].dt.strftime('%d/%m/%y')
+    
     # st.write(ecom) # base diffusion dataframe
     
     # st.write('de/para produtos:')
