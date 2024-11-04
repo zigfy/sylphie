@@ -14,7 +14,7 @@ oracledb.init_oracle_client(lib_dir=rf"{ORA_PATH}")
 pool = oracledb.create_pool(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN,
                             min=1, max=5, increment=1)
 
-def query(sql: str):
+def query(sql: str) -> list:
     data = []
     with pool.acquire() as conn:
         with conn.cursor() as cursor:
@@ -24,7 +24,7 @@ def query(sql: str):
     
 # print(query("select * from TMP_ACOES_COMERCIAIS where rownum <5"))
 
-def diffusion_query(date, werks):
-    sql = f"SELECT * FROM BI_DW.VOLUME_DIFUSAO_PRECO WHERE data_de IN ('{date}') AND WERKS IN ('{werks}')"
+def diffusion_query(date: str, werks: str) -> list:
+    sql = f"SELECT * FROM BI_DW.VOLUME_DIFUSAO_PRECO WHERE data_de IN TO_DATE('{date}', 'dd/mm/YY') AND WERKS IN ('{werks}')"
     diffusion_table = query(sql)
     return diffusion_table
