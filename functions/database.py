@@ -28,3 +28,8 @@ def diffusion_query(date: str, werks: str) -> list:
     sql = f"SELECT * FROM BI_DW.VOLUME_DIFUSAO_PRECO WHERE data_de IN TO_DATE('{date}', 'dd/mm/YY') AND WERKS IN ('{werks}')"
     diffusion_table = query(sql)
     return diffusion_table
+
+def products_query(skus) -> list:
+    sql = f"""SELECT * FROM BI_DW.PRODUTOS WHERE COD_PRODUTO IN ({skus})"""
+    products_table = query(sql)
+    return products_table
