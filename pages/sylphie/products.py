@@ -18,13 +18,19 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 def products_info():
     st.write("Informações sobre cadastro de itens.")
     products_file = fr"planilhas/cxx.xlsx"
+    new_file = r"planilhas/produtos_competitividade.xlsx"
     products_df = pd.read_excel(products_file)
-    st.dataframe(products_df)
+    products_df['COD_MATERIAL'] = products_df['COD_MATERIAL'].fillna(0).astype(int).astype(str).apply(lambda x: x.zfill(18))
     skus = products_df['COD_MATERIAL']
     skus_info = []
+    st.dataframe(products_df)
 
-    for row in products_df.index:
-        sku = products_df.at[row, 'COD_MATERIAL']
-        skus_info.append(products_query(sku))
+    data_df = pd.DataFrame(data=query("""
+SELECT COD_PRODUTO, DESC_PRODUTO, COD_EAN11, DATA_ULTATUALIZACAO, DESC_STATUS, COD_FORNECEDOR_REGULAR
+FROM BI_DW.PRODUTOS
+"""), columns='COD_PRODUTO, DESC_PRODUTO, COD_EAN11, DATA_ULTATUALIZACAO, DESC_STATUS, COD_FORNECEDOR_REGULAR')
+    
+    st.dataframe(data_df)
 
-    st.dataframe(skus_info)
+    #matched_values = sqldf(f"SELECT * FROM products_df LEFT JOIN data_df ON products_df.COD_MATERIAL = data_df.COD_PRODUTO", )
+    #st.dataframe(matched_values)
