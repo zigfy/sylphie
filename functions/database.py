@@ -1,4 +1,3 @@
-import oracledb
 import os
 from dotenv import load_dotenv
 
@@ -9,17 +8,8 @@ DB_PORT= os.getenv('DB_PORT')
 DB_DSN= os.getenv('DB_DSN')
 ORA_PATH= os.getenv('ORACLE_LIB')
 
-oracledb.init_oracle_client(lib_dir=rf"{ORA_PATH}")
-
-pool = oracledb.create_pool(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN,
-                            min=1, max=5, increment=1)
-
 def query(sql: str) -> list:
-    data = []
-    with pool.acquire() as conn:
-        with conn.cursor() as cursor:
-            for result in cursor.execute(sql):
-                data.append(result)
+        data = 'dados'
         return data
     
 # print(query("select * from TMP_ACOES_COMERCIAIS where rownum <5"))
