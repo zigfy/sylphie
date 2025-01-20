@@ -27,10 +27,19 @@ def vtex_diffusion():
     # NEW CONF. METHOD ->
         # produtos = st.file_uploader(label=f"Faça o upload do arquivo de produtos atualizado.") # pode ser fixo também
         volume_difusao = fr"G:\Meu Drive\Development\sylphie\planilhas\vtex\Pricing_volume_difusao.xlsx"
+
         if os.path.exists(volume_difusao):
-            os.remove(volume_difusao)
-        download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
-                    dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
+            last_modified_date = dt.date.fromtimestamp(os.path.getmtime(volume_difusao))
+            print(last_modified_date)
+            if last_modified_date != tday:
+                os.remove(volume_difusao)
+                download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
+                          dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
+            else:
+                st.write("O arquivo já está atualizado para hoje. O download será ignorado.")
+        else:
+            download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
+                          dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
 
         products_file = fr"planilhas/produtos vtex 06.11.csv"
         # diff_df = pd.read_csv(diffusion_file, delimiter=';', decimal=',') # diffusion dataframe
@@ -70,7 +79,7 @@ def vtex_diffusion():
             if not match.empty:
                 sku_vtex = match['COD VTEX'].values[0]
                 found_items.append([sku_sap, sku_vtex, sku_de, sku_por, price_type])
-            
+
             if match.empty:
                 unfound_items.append(sku_sap)
         
