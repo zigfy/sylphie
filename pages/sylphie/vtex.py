@@ -30,13 +30,14 @@ def vtex_diffusion():
 
         if os.path.exists(volume_difusao):
             last_modified_date = dt.date.fromtimestamp(os.path.getmtime(volume_difusao))
-            print(last_modified_date)
+            print("Última data de modificação do arquivo de difusão: ", last_modified_date)
             if last_modified_date != tday:
                 os.remove(volume_difusao)
                 download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
                           dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
             else:
-                st.write("O arquivo já está atualizado para hoje. O download será ignorado.")
+                st.write(f"""O de arquivo de difusão está com a data de hoje ({last_modified_date}). 
+                         O download será ignorado. Continuando a conferência...""")
         else:
             download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
                           dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
@@ -61,23 +62,27 @@ def vtex_diffusion():
         ecom['DATA_DE'] = ecom['DATA_DE'].dt.strftime('%d-%m-%Y')
         ecom['DATA_ATE'] = ecom['DATA_ATE'].dt.strftime('%d-%m-%Y')
         
-        # st.write(ecom) # base diffusion dataframe
-        
-        # st.write('de/para produtos:')
-        # st.write(products_df)
-        
         found_items = []
         unfound_items = []
-        
+        invalid_rows = []
+
         for row in ecom.index:
             sku_sap = ecom.at[row, 'MATERIAL']
             sku_de = ecom.at[row, 'PRECO_ANT']
             sku_por = ecom.at[row, 'PRECO_NOVO']
             price_type = ecom.at[row, 'TIPO']
             match = products_df[products_df['COD SAP'] == sku_sap]
-            
+
             if not match.empty:
                 sku_vtex = match['COD VTEX'].values[0]
+                sku_vtex = sku_vtex.lower()
+                print("first if condition on line 84", sku_sap, sku_vtex, sku_de, sku_por, price_type)
+
+                if "none" in sku_vtex:
+                    print(sku_vtex, "is none on row ", row)
+                    invalid_rows.append(sku_sap, sku_vtex, row)
+                    sku_vtex = sku_vtex.replace("none", "")
+                    print(f"after none treatment, sku_vtex on row {row} is {sku_vtex}.")
                 found_items.append([sku_sap, sku_vtex, sku_de, sku_por, price_type])
 
             if match.empty:
@@ -86,11 +91,15 @@ def vtex_diffusion():
         unfound_items = pd.DataFrame(unfound_items)
         
         found_items_df = pd.DataFrame(found_items, columns=['COD_SAP', 'COD_VTEX', 'PRECO_ANT', 'PRECO_NOVO', 'TIPO'])
+        found_items_df = found_items_df.dropna(subset=['COD_VTEX'])
         found_items_df = found_items_df.astype({"COD_SAP": str, "COD_VTEX": str})
+        cod_vtex_list = found_items_df['COD_VTEX'].tolist()
+        cleaned_cod_vtex_list = [item for item in cod_vtex_list if item and "None" not in item]
+
         st.write("Itens encontrados na difusão para o centro 1950:")
         st.dataframe(ecom)
         
-        prices_json_path = vtex_get_prices(found_items_df['COD_VTEX'].tolist())
+        prices_json_path = vtex_get_prices(cleaned_cod_vtex_list)
         base_prices, policy_price = json_to_table(prices_json_path)
         vtex_current_prices = pd.DataFrame(base_prices)
         
