@@ -36,7 +36,7 @@ def vtex_diffusion():
                 download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
                           dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
             else:
-                st.write(f"""O de arquivo de difusão está com a data de hoje ({last_modified_date}). 
+                st.write(f"""O arquivo de difusão está com a data de hoje ({last_modified_date}). 
                          O download será ignorado. Continuando a conferência...""")
         else:
             download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
@@ -52,13 +52,22 @@ def vtex_diffusion():
         ecom = pd.read_excel(volume_difusao)
         ecom = pd.DataFrame(ecom, columns=['MATERIAL', 'CENTRO', 'DATA_DE', 'DATA_ATE',
                                         'VALIDADE', 'PRECO_ANT', 'PRECO_NOVO', 'TIPO'])
-        tday_rundeck = [tday_rundeck]
-        ecom = ecom.astype({'MATERIAL': str, 'CENTRO': str, 'DATA_DE': 'datetime64[s]', 'DATA_ATE': 'datetime64[s]'})
+        ecom['PRECO_ANT'] = ecom['PRECO_ANT'].str.replace(",", ".")
+        ecom['PRECO_NOVO'] = ecom['PRECO_NOVO'].str.replace(",", ".")
+        
+        ecom = ecom.astype({
+            'MATERIAL': str,
+            'CENTRO': str,
+            'DATA_DE': 'datetime64[s]',
+            'DATA_ATE': 'datetime64[s]',
+            'PRECO_ANT': float,
+            'PRECO_NOVO': float})
+        
         ecom['DATA_DE'] = pd.to_datetime(ecom['DATA_DE'], format='%d-%m-%Y', exact=True)
         ecom['DATA_ATE'] = pd.to_datetime(ecom['DATA_ATE'], format='%d-%m-%Y', exact=True)
+        tday_rundeck = [tday_rundeck]
         tday_rundeck = pd.to_datetime(tday_rundeck, format='%d-%m-%Y', exact=True)
-        ecom = ecom[ecom['CENTRO'].isin(['1950'])]
-        ecom = ecom[ecom['DATA_DE'].isin(tday_rundeck)]
+        ecom = ecom[(ecom['CENTRO'].isin(['1950'])) & (ecom[ecom['DATA_DE'].isin(tday_rundeck)])]
         ecom['DATA_DE'] = ecom['DATA_DE'].dt.strftime('%d-%m-%Y')
         ecom['DATA_ATE'] = ecom['DATA_ATE'].dt.strftime('%d-%m-%Y')
         
