@@ -5,12 +5,14 @@ import sys
 import os
 
 from pages.sylphie.vkp2 import *
+from pages.sylphie.vtex import *
+from pages.sylphie.tests import *
 from pages.sylphie.parser import *
 from pages.sylphie.pricing import *
-from pages.sylphie.dataframes import *
 from pages.sylphie.difusao import *
-from pages.sylphie.vtex import *
-from pages.sylphie.sap_login import login_screen
+from pages.sylphie.products import *
+from pages.sylphie.sap_login import *
+from pages.sylphie.dataframes import *
 from sap_scripts.generate_script import *
 from sap_scripts.run_script import run_sap_script
 
@@ -30,7 +32,7 @@ def app():
     st.write("Bem-vindo! Selecione a transação desejada.")
 
             # Caixinha de pesquisa para as transações
-    transaction = st.selectbox("Transação", ["Difusão", "Preços", "VTEX", "VKP2", "Parser", "DataFrames", "SE16N", "VKP6", "ZSD063"])
+    transaction = st.selectbox("Transação", ["Difusão", "Preços", "VTEX", "Produtos - Cadastro", "VKP2", "SQL - Parser", "JSON - Parser", "DataFrames", "tests", "SE16N", "VKP6", "ZSD063"])
 
     if transaction == "VKP2":
         # Mostra a tela para a transação VKP2
@@ -39,8 +41,8 @@ def app():
     if transaction == "DataFrames":
         open_dataframe()
 
-    if transaction == "Parser":
-        parser()
+    if transaction == "SQL - Parser":
+        parser_sql()
 
     if transaction == "Preços":
         alter_pricing()
@@ -50,4 +52,13 @@ def app():
 
     if transaction == "VTEX":
         vtex_diffusion()
+
+    if transaction == "tests":
+        tests()
+
+    if transaction == "Produtos - Cadastro":
+        products_info()
+
+    if transaction == "JSON - Parser":
+        parser_json()
 main()

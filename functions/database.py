@@ -1,4 +1,3 @@
-import oracledb
 import os
 from dotenv import load_dotenv
 
@@ -9,17 +8,18 @@ DB_PORT= os.getenv('DB_PORT')
 DB_DSN= os.getenv('DB_DSN')
 ORA_PATH= os.getenv('ORACLE_LIB')
 
-oracledb.init_oracle_client(lib_dir=rf"{ORA_PATH}")
-
-pool = oracledb.create_pool(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN,
-                            min=1, max=5, increment=1)
-
-def query(sql: str):
-    data = []
-    with pool.acquire() as conn:
-        with conn.cursor() as cursor:
-            for result in cursor.execute(sql):
-                data.append(result)
+def query(sql: str) -> list:
+        data = 'dados'
         return data
     
-print(query("select * from bi_ods.zposcst102 where dtopr in ('20241024')"))
+# print(query("select * from TMP_ACOES_COMERCIAIS where rownum <5"))
+
+def diffusion_query(date: str, werks: str) -> list:
+    sql = f"SELECT * FROM BI_DW.VOLUME_DIFUSAO_PRECO WHERE data_de IN TO_DATE('{date}', 'dd/mm/YY') AND WERKS IN ('{werks}')"
+    diffusion_table = query(sql)
+    return diffusion_table
+
+def products_query(skus) -> list:
+    sql = f"""SELECT * FROM BI_DW.PRODUTOS WHERE COD_PRODUTO IN ({skus})"""
+    products_table = query(sql)
+    return products_table
