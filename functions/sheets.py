@@ -97,21 +97,25 @@ def json_to_table(file: str) -> list:
 
     for item_list in data:
         for item in item_list:
-            produtos_data.append({
-                "COD_VTEX": item["itemId"],
-                "PRECO_DE": item["listPrice"],
-                "PRECO_POR": item["costPrice"],
-            })
-            
-            for price in item["fixedPrices"]:
-                precos_fixos_data.append({
+            try:    
+                produtos_data.append({
                     "COD_VTEX": item["itemId"],
-                    "POLITICA": price["tradePolicyId"],
-                    "PRECO_DE": price["listPrice"],
-                    "PRECO_VIGENTE": price["value"],
-                    "DATA_INICIO": price["dateRange"]["from"],
-                    "DATA_FIM": price["dateRange"]["to"]
+                    "PRECO_DE": item["listPrice"],
+                    "PRECO_POR": item["costPrice"],
                 })
+                
+                for price in item["fixedPrices"]:
+                    precos_fixos_data.append({
+                        "COD_VTEX": item["itemId"],
+                        "POLITICA": price["tradePolicyId"],
+                        "PRECO_DE": price["listPrice"],
+                        "PRECO_VIGENTE": price["value"],
+                        "DATA_INICIO": price["dateRange"]["from"],
+                        "DATA_FIM": price["dateRange"]["to"]
+                    })
+            except:
+                print('erro')
+                continue
 
     base_price = pd.DataFrame(produtos_data)
     policy_price = pd.DataFrame(precos_fixos_data)
