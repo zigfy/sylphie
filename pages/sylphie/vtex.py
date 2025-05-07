@@ -38,10 +38,12 @@ def vtex_diffusion():
             else:
                 st.write(f"""O arquivo de difusão está com a data de hoje ({last_modified_date}). 
                          O download será ignorado. Continuando a conferência...""")
-        else:
+        
+        if not os.path.exists(volume_difusao):
             download_file(uri=f"https://storage.cloud.google.com/ri-happy-extracoes/Pricing/volume_difusao.xlsx",
                           dir=fr"G:\Meu Drive\Development\sylphie\planilhas\vtex")
 
+        time.sleep(15)
         products_file = fr"planilhas/produtos vtex 06.11.csv"
         # diff_df = pd.read_csv(diffusion_file, delimiter=';', decimal=',') # diffusion dataframe
         products_df = pd.read_csv(products_file, delimiter=';', decimal=',') # file with the comparison of SAP vs VTEX code
@@ -54,6 +56,8 @@ def vtex_diffusion():
                                         'VALIDADE', 'PRECO_ANT', 'PRECO_NOVO', 'TIPO'])
         ecom['PRECO_ANT'] = ecom['PRECO_ANT'].str.replace(",", ".")
         ecom['PRECO_NOVO'] = ecom['PRECO_NOVO'].str.replace(",", ".")
+        # ecom['MATERIAL'] = ecom['MATERIAL'].astype(str).str.zfill(18)
+        ecom['MATERIAL'] = ecom['MATERIAL'].fillna(0, inplace=False).astype(int).astype(str)
         
         ecom = ecom.astype({
             'MATERIAL': str,
@@ -67,7 +71,8 @@ def vtex_diffusion():
         ecom['DATA_ATE'] = pd.to_datetime(ecom['DATA_ATE'], format='%d-%m-%Y', exact=True)
         tday_rundeck = [tday_rundeck]
         tday_rundeck = pd.to_datetime(tday_rundeck, format='%d-%m-%Y', exact=True)
-        ecom = ecom[(ecom['CENTRO'].isin(['1950'])) & (ecom[ecom['DATA_DE'].isin(tday_rundeck)])]
+        ecom = ecom[ecom['CENTRO'].isin(['1950'])]
+        ecom = ecom[ecom['DATA_DE'].isin(tday_rundeck)]
         ecom['DATA_DE'] = ecom['DATA_DE'].dt.strftime('%d-%m-%Y')
         ecom['DATA_ATE'] = ecom['DATA_ATE'].dt.strftime('%d-%m-%Y')
         
@@ -85,7 +90,7 @@ def vtex_diffusion():
             if not match.empty:
                 sku_vtex = match['COD VTEX'].values[0]
                 sku_vtex = sku_vtex.lower()
-                print("first if condition on line 84", sku_sap, sku_vtex, sku_de, sku_por, price_type)
+                print("first if condition on line 91", sku_sap, sku_vtex, sku_de, sku_por, price_type)
 
                 if "none" in sku_vtex:
                     print(sku_vtex, "is none on row ", row)

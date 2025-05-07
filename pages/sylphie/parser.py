@@ -35,13 +35,14 @@ def parser_json() -> None:
         results['IS_SHOPPING'] = results['IS_SHOPPING'].apply(lambda x: x.strip().upper() == "SHOPPING" if pd.notnull(x) or pd.notna(x) else False)
         results[['ENDERECO', 'NUMERO']] = results['ENDERECO'].str.split(',', n=1, expand=True)
         results['NUMERO'] = results['NUMERO'].str.strip()
+        results['CNPJ'] = results['CNPJ'].astype(str).fillna(0)
         
         if not results.empty:
             lojas_dict = {
                 "lojas": {
                     str(row['COD_SAP']): {
                         "COD_SAP": row['COD_SAP'],
-                        "CNPJ": row.get('CNPJ', ""),
+                        "CNPJ": "".join(c for c in row.get('CNPJ', "") if c.isdigit()),
                         "ENDERECO": row.get('ENDERECO', ""),
                         "NUMERO": row.get("NUMERO", ""),
                         "CEP": row.get('CEP', ""),
